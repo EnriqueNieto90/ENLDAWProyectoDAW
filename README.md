@@ -30,6 +30,27 @@
         - [Virtual Hosts](#virtual-hosts)
         - [Permisos y usuarios](#permisos-y-usuarios)
       - [1.1.3 PHP](#113-php)
+    - [Instalación de PHP 8.3-FPM](#instalación-de-php-83-fpm)
+      - [Añadir el repositorio PPA](#añadir-el-repositorio-ppa)
+    - [1.2. Instalar los paquetes](#12-instalar-los-paquetes)
+    - [Configuración de Apache2](#configuración-de-apache2)
+      - [Desactivar Módulos Antiguos](#desactivar-módulos-antiguos)
+      - [Activar Módulos Nuevos](#activar-módulos-nuevos)
+      - [Activar la Configuración de PHP-FPM](#activar-la-configuración-de-php-fpm)
+      - [Reiniciar Apache](#reiniciar-apache)
+    - [Configuración de PHP-FPM](#configuración-de-php-fpm)
+      - [Archivos de Configuración Clave](#archivos-de-configuración-clave)
+      - [Configuración del Pool (`www.conf`)](#configuración-del-pool-wwwconf)
+      - [Ajustar `php.ini` para Desarrollo](#ajustar-phpini-para-desarrollo)
+      - [Reiniciar el Servicio FPM](#reiniciar-el-servicio-fpm)
+    - [Verificación del Sistema](#verificación-del-sistema)
+      - [Comprobar Estado de los Servicios](#comprobar-estado-de-los-servicios)
+      - [Comprobar Módulo MPM de Apache](#comprobar-módulo-mpm-de-apache)
+      - [Comprobar el Socket de FPM](#comprobar-el-socket-de-fpm)
+      - [Prueba final con `phpinfo()`](#prueba-final-con-phpinfo)
+    - [(Avanzado) Métodos de Configuración Alternativos](#avanzado-métodos-de-configuración-alternativos)
+      - [Opción A: `ProxyPassMatch`](#opción-a-proxypassmatch)
+      - [Opción B: `SetHandler` (dentro de `FilesMatch`)](#opción-b-sethandler-dentro-de-filesmatch)
       - [1.1.4 MySQL](#114-mysql)
       - [1.1.5 XDebug](#115-xdebug)
       - [1.1.6 Servidor web seguro (HTTPS)](#116-servidor-web-seguro-https)
@@ -282,6 +303,310 @@ sudo adduser --home /vaar/www/html --ingroup www-data --shell /bin/bash operador
 ````
 
 #### 1.1.3 PHP
+### Instalación de PHP 8.3-FPM
+
+Estos pasos instalan PHP 8.3 y FPM usando el repositorio PPA de Ondřej Surý, que proporciona las versiones más actualizadas.
+
+#### Añadir el repositorio PPA
+
+Primero, actualizamos el sistema e instalamos las herramientas para gestionar repositorios.
+
+```
+# Actualizar la lista de paquetes
+sudo apt update
+
+# Instalar herramientas para añadir repositorios
+sudo apt install software-properties-common -y
+````
+
+Añadimos el PPA de Ondřej Surý para PHP.
+
+```
+# Añadir el PPA
+sudo add-apt-repository ppa:ondrej/php -y
+
+# Opcional: Verificar que el repositorio se añadió
+ls /etc/apt/sources.list.d/ | grep ondrej
+```
+
+
+
+### 1.2. Instalar los paquetes
+
+Actualizamos la lista de paquetes nuevamente tras añadir el PPA e instalamos PHP 8.3, FPM y el módulo de Apache (necesario para las dependencias y archivos de configuración).
+
+```
+# Actualizar la lista de paquetes con el nuevo PPA
+sudo apt update
+
+# Instalar PHP 8.3, FPM y el módulo de Apache
+sudo apt install php8.3-fpm php8.3 libapache2-mod-php8.3 -y
+```
+
+
+
+-----
+
+### Configuración de Apache2
+
+Ahora, configuraremos Apache para que deje de usar el módulo PHP tradicional (`mod_php`) y en su lugar redirija las peticiones a PHP-FPM.
+
+#### Desactivar Módulos Antiguos
+
+Desactivamos `mpm_prefork` (el módulo de multiprocesamiento antiguo, incompatible con FPM) y el módulo `php8.3` (`mod_php`).
+
+```
+# Desactivar mpm_prefork
+sudo a2dismod mpm_prefork
+
+# Desactivar el módulo PHP tradicional
+sudo a2dismod php8.3
+```
+
+#### Activar Módulos Nuevos
+
+Activamos `mpm_event` (el módulo de multiprocesamiento moderno y eficiente), `proxy_fcgi` (para actuar como proxy FastCGI) y `setenvif` (usado por la configuración de FPM).
+
+```
+# Activar mpm_event
+sudo a2enmod mpm_event
+
+# Activar los módulos de proxy FastCGI y setenvif
+sudo a2enmod proxy_fcgi setenvif
+```
+
+#### Activar la Configuración de PHP-FPM
+
+El paquete `php8.3-fpm` incluye un archivo de configuración listo para Apache. Solo necesitamos activarlo.
+
+```
+sudo a2enconf php8.3-fpm
+```
+
+Este comando activa el archivo `/etc/apache2/conf-available/php8.3-fpm.conf`, que generalmente contiene lo siguiente:
+
+```
+<FilesMatch ".+\.ph(?:ar|p|tml)$">
+    SetHandler "proxy:unix:/run/php/php8.3-fpm.sock|fcgi://localhost"
+</FilesMatch>
+```
+
+**Explicación de este bloque:**
+
+  * `<FilesMatch ".+\.ph(?:ar|p|tml)$">`: Aplica esta regla a cualquier archivo que termine en `.php`, `.phtml` o `.phar`.
+  * `SetHandler "..."`: Indica a Apache cómo manejar estos archivos.
+  * `proxy:unix:/run/php/php8.3-fpm.sock`: Esta es la parte clave.
+      * `proxy`: Le dice a Apache que use `mod_proxy`.
+      * `unix:/run/php/php8.3-fpm.sock`: Especifica que debe conectarse a PHP-FPM a través de un **Socket UNIX** local (un archivo especial en el sistema). Esta es la configuración por defecto y la más eficiente si Apache y PHP están en la misma máquina.
+      * `|fcgi://localhost`: Define el protocolo a usar (FastCGI).
+
+#### Reiniciar Apache
+
+Aplicamos todos los cambios reiniciando el servicio de Apache.
+
+```
+sudo systemctl restart apache2
+```
+
+
+
+-----
+
+### Configuración de PHP-FPM
+
+El servicio PHP-FPM también tiene sus propios archivos de configuración, que definen *cómo* se ejecutan los procesos PHP.
+
+#### Archivos de Configuración Clave
+
+La configuración de FPM se encuentra principalmente en `/etc/php/8.3/fpm/`:
+
+  * `/etc/php/8.3/fpm/php.ini`: Configuración de PHP específica para FPM (diferente de `/etc/php/8.3/cli/php.ini`). Aquí se ajustan directivas como `memory_limit`, `upload_max_filesize`, etc.
+  * `/etc/php/8.3/fpm/php-fpm.conf`: Configuración general del servicio FPM.
+  * `/etc/php/8.3/fpm/pool.d/`: Directorio que contiene las configuraciones de los "pools" de procesos.
+  * `/etc/php/8.3/fpm/pool.d/www.conf`: Es el pool por defecto.
+
+#### Configuración del Pool (`www.conf`)
+
+El archivo `www.conf` define cómo se comporta el pool de procesos principal. Los parámetros más importantes son:
+
+  * `[www]`: El nombre del pool.
+  * `user` y `group`: El usuario y grupo con el que se ejecutarán los procesos PHP (usualmente `www-data`).
+  * `listen`: Define cómo escucha FPM. Es crucial que esto coincida con la configuración de Apache.
+      * **Socket UNIX (Por defecto):** `listen = /run/php/php8.3-fpm.sock`
+      * **Socket TCP:** `listen = 127.0.0.1:9000` (Útil si FPM está en otra máquina).
+  * `pm`: El gestor de procesos.
+      * `dynamic`: (Por defecto) Crea y destruye procesos según la carga.
+      * `static`: Mantiene un número fijo de procesos.
+      * `ondemand`: Crea procesos solo cuando se necesitan.
+  * Otras directivas `pm.*`: `pm.max_children`, `pm.start_servers`, etc., que controlan cuántos procesos se pueden ejecutar.
+
+#### Ajustar `php.ini` para Desarrollo
+
+Para un entorno de desarrollo, es útil modificar el `php.ini` de FPM para mostrar errores y aumentar los límites de subida.
+
+Primero, hacemos una copia de seguridad:
+
+```
+sudo cp /etc/php/8.3/fpm/php.ini /etc/php/8.3/fpm/php.ini.backup
+```
+
+Luego, editamos el archivo:
+
+```
+sudo nano /etc/php/8.3/fpm/php.ini
+```
+
+Busca (con `Ctrl+W` en nano) y modifica las siguientes directivas (ejemplos):
+
+```
+display_errors = On
+memory_limit = 256M
+upload_max_filesize = 64M
+post_max_size = 64M
+max_execution_time = 300
+```
+
+#### Reiniciar el Servicio FPM
+
+Para que los cambios en `php.ini` o en la configuración del pool surtan efecto, reinicia el servicio PHP-FPM.
+
+```
+sudo systemctl restart php8.3-fpm
+```
+
+-----
+
+### Verificación del Sistema
+
+Comprobemos que todos los servicios están funcionando correctamente.
+
+#### Comprobar Estado de los Servicios
+
+Verifica que tanto Apache como PHP-FPM estén activos (`active (running)`).
+
+```
+sudo systemctl status apache2
+sudo systemctl status php8.3-fpm
+```
+
+[Insertar captura de pantalla del estado de los servicios aquí]
+
+#### Comprobar Módulo MPM de Apache
+
+Confirma qué módulo de multiprocesamiento (MPM) está usando Apache. Debería ser `mpm_event_module`.
+
+```
+apache2ctl -M | grep mpm
+```
+
+**Resultado esperado:**
+
+```
+ mpm_event_module (shared)
+```
+
+#### Comprobar el Socket de FPM
+
+Verifica cómo está escuchando PHP-FPM para asegurarte de que coincide con la configuración de Apache.
+
+```
+grep '^listen' /etc/php/8.3/fpm/pool.d/*.conf
+```
+
+**Resultado esperado (Socket UNIX):**
+
+```
+/etc/php/8.3/fpm/pool.d/www.conf:listen = /run/php/php8.3-fpm.sock
+```
+
+**Resultado alternativo (Socket TCP):**
+
+```
+/etc/php/8.3/fpm/pool.d/www.conf:listen = 127.0.0.1:9000
+```
+
+#### Prueba final con `phpinfo()`
+
+Crea un archivo de prueba en el directorio raíz de tu servidor web.
+
+```
+echo "<?php phpinfo(); ?>" | sudo tee /var/www/html/info.php
+```
+
+Ahora, visita `http://<tu_direccion_ip>/info.php` en tu navegador.
+
+Busca la línea **"Server API"**. Debería mostrar **"FPM/FastCGI"**. Esto confirma que Apache está pasando la petición a PHP-FPM correctamente.
+
+[Insertar captura de pantalla de phpinfo() mostrando 'FPM/FastCGI' aquí]
+
+**¡Importante\!** Borra este archivo después de verificar, ya que expone información sensible de tu servidor.
+
+```
+sudo rm /var/www/html/info.php
+```
+
+-----
+
+### (Avanzado) Métodos de Configuración Alternativos
+
+Si no deseas usar la configuración global (`a2enconf php8.3-fpm`), puedes configurar el proxy manualmente dentro de tu archivo de VirtualHost (ej: `/etc/apache2/sites-available/000-default.conf`).
+
+#### Opción A: `ProxyPassMatch`
+
+Esta directiva usa una expresión regular para redirigir las peticiones.
+
+**Si FPM escucha en Socket UNIX:**
+
+```
+<VirtualHost *:80>
+    DocumentRoot /var/www/html
+    # ... otras directivas ...
+
+    ProxyPassMatch ^/(.*\.php)$ unix:/run/php/php8.3-fpm.sock|fcgi://127.0.0.1/var/www/html
+</VirtualHost>
+```
+
+**Si FPM escucha en Socket TCP (ej: 127.0.0.1:9000):**
+
+```
+<VirtualHost *:80>
+    DocumentRoot /var/www/html
+    # ... otras directivas ...
+    
+    # Nota el $1 al final para pasar el nombre del archivo
+    ProxyPassMatch ^/(.*\.php)$ fcgi://127.0.0.1:9000/var/www/html/$1
+</VirtualHost>
+```
+
+#### Opción B: `SetHandler` (dentro de `FilesMatch`)
+
+Esta es otra forma de lograr lo mismo, considerada por algunos más limpia.
+
+**Si FPM escucha en Socket UNIX:**
+
+```
+<VirtualHost *:80>
+    DocumentRoot /var/www/html
+    # ... otras directivas ...
+    
+    <FilesMatch "\.php$">
+        SetHandler "proxy:unix:/run/php/php8.3-fpm.sock|fcgi://localhost/"
+    </FilesMatch>
+</VirtualHost>
+```
+
+**Si FPM escucha en Socket TCP (ej: 127.0.0.1:9000):**
+
+```
+<VirtualHost *:80>
+    DocumentRoot /var/www/html
+    # ... otras directivas ...
+    
+    <FilesMatch "\.php$">
+        SetHandler "proxy:fcgi://127.0.0.1:9000"
+    </FilesMatch>
+</VirtualHost>
+```
 #### 1.1.4 MySQL
 #### 1.1.5 XDebug
 #### 1.1.6 Servidor web seguro (HTTPS)
