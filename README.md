@@ -19,7 +19,6 @@
         - [**Configuración fecha y hora**](#configuración-fecha-y-hora)
         - [**Cuentas administradoras**](#cuentas-administradoras)
         - [**Habilitar cortafuegos**](#habilitar-cortafuegos)
-      - [**Conexión al servidor desde Windows**](#conexión-al-servidor-desde-windows)
         - [**Comprobar IP, puerta de enlace y DNS**](#comprobar-ip-puerta-de-enlace-y-dns)
         - [**Particiones**](#particiones)
         - [**Actualización**](#actualización)
@@ -51,14 +50,30 @@
     - [(Avanzado) Métodos de Configuración Alternativos](#avanzado-métodos-de-configuración-alternativos)
       - [Opción A: `ProxyPassMatch`](#opción-a-proxypassmatch)
       - [Opción B: `SetHandler` (dentro de `FilesMatch`)](#opción-b-sethandler-dentro-de-filesmatch)
-      - [1.1.4 MySQL](#114-mysql)
+      - [1.1.4 MariaDB](#114-mariadb)
+  - [Instalación](#instalación-1)
+    - [1. Verificar la instalación existente](#1-verificar-la-instalación-existente)
+    - [2. Instalar MariaDB](#2-instalar-mariadb)
+  - [Configuración](#configuración)
+    - [1. Editar el fichero de configuración](#1-editar-el-fichero-de-configuración)
+    - [2. Añadir la configuración](#2-añadir-la-configuración)
       - [1.1.5 XDebug](#115-xdebug)
+  - [Instalación](#instalación-2)
+    - [1. Verificar la instalación existente](#1-verificar-la-instalación-existente-1)
+    - [2. Instalar Xdebug](#2-instalar-xdebug)
+  - [Configuración](#configuración-1)
+    - [1. Editar el fichero de configuración](#1-editar-el-fichero-de-configuración-1)
+    - [2. Añadir la configuración](#2-añadir-la-configuración-1)
+  - [Reiniciar Servicios](#reiniciar-servicios)
+    - [Opción 1: Reiniciar Apache](#opción-1-reiniciar-apache)
+    - [Opción 2: Reiniciar PHP-FPM](#opción-2-reiniciar-php-fpm)
       - [1.1.6 Servidor web seguro (HTTPS)](#116-servidor-web-seguro-https)
       - [1.1.7 DNS](#117-dns)
       - [1.1.8 SFTP](#118-sftp)
       - [1.1.9 Apache Tomcat](#119-apache-tomcat)
       - [1.1.10 LDAP](#1110-ldap)
     - [1.2 Windows 11](#12-windows-11)
+      - [**Conexión al servidor desde Windows**](#conexión-al-servidor-desde-windows)
       - [1.2.1 **Configuración inicial**](#121-configuración-inicial)
         - [**Nombre y configuración de red**](#nombre-y-configuración-de-red-1)
         - [**Cuentas administradoras**](#cuentas-administradoras-1)
@@ -194,25 +209,6 @@ sudo ufw status numbered
 
 ````
 sudo ufw delete [numPuerto]
-````
-
-#### **Conexión al servidor desde Windows**
-
-- Arrancamos el servicio ssh en el servidor para permitir la conexión
-````
-sudo systemctl start ssh
-````
-- Comprobamos que está en active (running)
-````
-sudo systemctl status ssh
-````
-- Si no está en active (running) lo habilitamos
-````
-sudo systemctl enable ssh
-````
-- Para conectarnos a nuestro servidor desde nuestro anfitrión: Abrimos la consola de windows (símbolo del sistema) y escribimos el comando ssh con nuestro nombre de usuario @ y la ip de nuestro servidor. Nos pedirá la clave.
-````
-ssh miadmin@10.10.199.9.184
 ````
 
 ##### **Comprobar IP, puerta de enlace y DNS**
@@ -607,8 +603,120 @@ Esta es otra forma de lograr lo mismo, considerada por algunos más limpia.
     </FilesMatch>
 </VirtualHost>
 ```
-#### 1.1.4 MySQL
+#### 1.1.4 MariaDB
+Documentación para la instalación y configuración de MariaDB en un entorno PHP 8.3.
+
+---
+
+## Instalación
+
+### 1. Verificar la instalación existente
+
+Primero, comprueba si MariaDB ya está instalado ejecutando el siguiente comando en tu terminal:
+```
+sudo php -m | grep mariadb
+```
+
+Si este comando muestra información sobre MariaDB, puedes pasar directamente a la sección de configuración.
+
+### 2. Instalar MariaDB
+
+Si el comando anterior no mostró resultados, instala MariaDB con:
+```
+sudo apt install mariadb-server -y
+```
+
+## Configuración
+
+Una vez instalado, MariaDB necesita ser configurado.
+
+### 1. Editar el fichero de configuración
+
+Abre el archivo de configuración de . La ruta se encuentra en:
+```
+sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+
+### 2. Añadir la configuración
+
+Localiza la línea bind-address = 127.0.0.1 y cámbiala a :
+```
+bind-address = 0.0.0.0
+```
+
+Guarda los cambios.
+```
+sudo systemctl restart mariadb
+```
+
 #### 1.1.5 XDebug
+
+Documentación para la instalación y configuración de Xdebug en un entorno PHP 8.3.
+
+---
+
+## Instalación
+
+### 1. Verificar la instalación existente
+
+Primero, comprueba si Xdebug ya está instalado ejecutando el siguiente comando en tu terminal:
+```
+sudo php -m | grep xdebug
+```
+
+Si este comando muestra información sobre Xdebug, puedes pasar directamente a la sección de configuración.
+
+### 2. Instalar Xdebug
+
+Si el comando anterior no mostró resultados, instala Xdebug para PHP 8.3:
+```
+sudo apt install php8.3-xdebug
+```
+
+## Configuración
+
+Una vez instalado, Xdebug necesita ser configurado.
+
+### 1. Editar el fichero de configuración
+
+Abre el archivo de configuración de Xdebug. La ruta se encuentra en:
+```
+sudo nano /etc/php/8.3/fpm/conf.d/20-xdebug.ini
+```
+
+### 2. Añadir la configuración
+
+Añade las siguientes líneas al final del archivo `20-xdebug.ini`:
+```
+xdebug.mode=develop,debug
+xdebug.start_with_request=yes
+xdebug.client_host=127.0.0.1
+xdebug.client_port=9003
+xdebug.log=/tmp/xdebug.log
+xdebug.log_level=7
+xdebug.idekey="netbeans-xdebug"
+xdebug.discover_client_host=1
+```
+
+Guarda los cambios y cierra el editor.
+
+## Reiniciar Servicios
+
+Para que los cambios en la configuración surtan efecto, debes reiniciar el servidor web o el servicio PHP-FPM.
+
+### Opción 1: Reiniciar Apache
+
+Si usas Apache:
+```
+sudo systemctl restart apache2
+```
+
+### Opción 2: Reiniciar PHP-FPM
+
+Si usas PHP-FPM:
+```
+sudo systemctl restart php8.3-fpm
+```
 #### 1.1.6 Servidor web seguro (HTTPS)
 #### 1.1.7 DNS
 #### 1.1.8 SFTP
@@ -616,6 +724,24 @@ Esta es otra forma de lograr lo mismo, considerada por algunos más limpia.
 #### 1.1.10 LDAP
 
 ### 1.2 Windows 11
+#### **Conexión al servidor desde Windows**
+
+- Arrancamos el servicio ssh en el servidor para permitir la conexión
+````
+sudo systemctl start ssh
+````
+- Comprobamos que está en active (running)
+````
+sudo systemctl status ssh
+````
+- Si no está en active (running) lo habilitamos
+````
+sudo systemctl enable ssh
+````
+- Para conectarnos a nuestro servidor desde nuestro anfitrión: Abrimos la consola de windows (símbolo del sistema) y escribimos el comando ssh con nuestro nombre de usuario @ y la ip de nuestro servidor. Nos pedirá la clave.
+````
+ssh miadmin@10.10.199.9.184
+````
 #### 1.2.1 **Configuración inicial**
 ##### **Nombre y configuración de red**
 ##### **Cuentas administradoras**
