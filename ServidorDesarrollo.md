@@ -1424,20 +1424,9 @@ PHP-FPM (FastCGI Process Manager) mejora rendimiento y estabilidad en la ejecuci
 # Actualizar
 sudo apt update
 
-# Instalar software-properties-common
-sudo apt install software-properties-common -y
-
-# Agregar repositorio Ondřej Surý
-sudo add-apt-repository ppa:ondrej/php -y
-
-# Verificar
-ls /etc/apt/sources.list.d/ | grep ondrej
-
-# Actualizar
-sudo apt update
-
 # Instalar PHP 8.3 y PHP-FPM
-sudo apt install php8.3 php8.3-fpm php8.3-cli libapache2-mod-php8.3 -y
+sudo apt install php8.3-fpm php8.3
+
 ```
 
 ### Configuración
@@ -1695,51 +1684,6 @@ php -m | grep intl
 | **Comparación** | Ordenar con reglas del idioma | Ordenar con acentos |
 | **Normalización** | Comparaciones correctas | Caracteres combinados vs precompuestos |
 
-**Ejemplo (fechas):**
-```php
-<?php
-$fecha = new DateTime('2025-10-27');
-$formatter_es = new IntlDateFormatter('es_ES', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-$formatter_en = new IntlDateFormatter('en_US', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-
-echo $formatter_es->format($fecha); // 27 de octubre de 2025
-echo $formatter_en->format($fecha); // October 27, 2025
-?>
-```
-
-#### D) php8.3-xml
-
-**¿Por qué es necesario?**
-
-Requerido por herramientas como PHPDocumentor y Composer.
-```bash
-sudo apt install php8.3-xml
-sudo systemctl restart php8.3-fpm
-php -m | grep -E 'xml|SimpleXML|dom'
-```
-
-#### E) php8.3-curl
-```bash
-sudo apt install php8.3-curl
-sudo systemctl restart php8.3-fpm
-php -m | grep curl
-```
-
-#### F) php8.3-gd
-
-Manipulación de imágenes.
-```bash
-sudo apt install php8.3-gd
-sudo systemctl restart php8.3-fpm
-php -m | grep gd
-```
-
-#### G) php8.3-zip
-```bash
-sudo apt install php8.3-zip
-sudo systemctl restart php8.3-fpm
-php -m | grep zip
-```
 
 ---
 
