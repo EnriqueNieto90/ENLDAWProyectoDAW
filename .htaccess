@@ -1,0 +1,4 @@
+ErrorDocument 404 "Lo sentimos, pero vas a tener que irte por donde has venido"
+ErrorDocument 404 /ENLDAWProyectoDAW/error/404.html
+ErrorDocument 403 /ENLDAWProyectoDAW/error/403.html
+ErrorDocument 500 ENLDAWProyectoDAW/error/500.html
