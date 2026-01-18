@@ -19,7 +19,7 @@
                 </a>
                 <h1>Enrique Nieto Lorenzo</h1>
             </div>
-            <div class="curso-badge" style="background-color: #777BB4; color: white;">
+            <div class="curso-badge" style="background-color: #007ACC; color: white;">
                 DAW
             </div>
         </div>
@@ -32,40 +32,16 @@
         <div class="rejilla-tarjetas">
 
             <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #777BB4;">
-                    
-                    
-                    <i class="fa-solid fa-book"></i>
+                <div class="tarjeta-imagen" style="background-color: #007ACC;">
+                    <i class="fa-solid fa-server"></i>
                 </div>
                 <div class="tarjeta-contenido">
                     <span class="siglas">Tema 1</span>
-                    <span class="nombre-tema">Entorno Servidor</span>
-                    <ul class="lista-ejercicios">
-                        <li>
-                            <a href="doc/Tema1Ejercicios.pdf" target="_blank">
-                                <i class="fa-regular fa-file-pdf"></i> Estudio Tema 1
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </article>
-
-            <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #777BB4;">
-                    <i class="fa-solid fa-screwdriver-wrench"></i>
-                </div>
-                <div class="tarjeta-contenido">
-                    <span class="siglas">Tema 2</span>
-                    <span class="nombre-tema">Instalación y Configuración</span>
+                    <span class="nombre-tema">Implantación, configuración y administrador de servidores web</span>
                     <ul class="lista-ejercicios">
                         <li>
                             <a href="https://github.com/EnriqueNieto90/ENLDAWProyectoDAW" target="_blank">
-                                <i class="fa-brands fa-github"></i> Documentación Tema 2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://github.com/EnriqueNieto90/ENLDWESProyectoDWES/blob/developerENL/doc/FUNCIONES_CLASES_PHP.md" target="_blank">
-                                <i class="fa-brands fa-php"></i> Funciones PHP
+                                <i class="fa-solid fa-file-lines"></i> Documentación
                             </a>
                         </li>
                     </ul>
@@ -73,115 +49,54 @@
             </article>
 
             <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #777BB4;">
-                    <i class="fa-solid fa-code"></i>
-                </div>
-                <div class="tarjeta-contenido">
-                    <span class="siglas">Tema 3</span>
-                    <span class="nombre-tema">Características PHP</span>
-                    <ul class="lista-ejercicios">
-                        <li>
-                            <a href="/ENLDWESProyectoTema3/indexProyectoTema3.php">
-                                <i class="fa-solid fa-folder-open"></i> Proyecto Tema 3
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </article>
-
-            <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #777BB4;">
-                    <i class="fa-solid fa-database"></i>
-                </div>
-                <div class="tarjeta-contenido">
-                    <span class="siglas">Tema 4</span>
-                    <span class="nombre-tema">Acceso a Datos</span>
-                    <ul class="lista-ejercicios">
-                        <li>
-                            <a href="/ENLDWESProyectoTema4/indexProyectoTema4.php">
-                                <i class="fa-solid fa-database"></i> Proyecto Tema 4
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </article>
-
-            <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #777BB4;">
-                    <i class="fa-solid fa-laptop-code"></i>
-                </div>
-                <div class="tarjeta-contenido">
-                    <span class="siglas">Tema 5</span>
-                    <span class="nombre-tema">Desarrollo Apps Web</span>
-                    <ul class="lista-ejercicios">
-                        <li>
-                            <a href="/ENLDWESProyectoTema5/indexProyectoTema5.php">
-                                <i class="fa-solid fa-project-diagram"></i> Proyecto Tema 5
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/ENLDWESLoginLogoffTema5/indexLoginLogoffTema5.php">
-                                <i class="fa-solid fa-right-to-bracket"></i> Login / Logoff
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </article>
-
-            <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #777BB4;">
-                    <i class="fa-solid fa-layer-group"></i>
-                </div>
-                <div class="tarjeta-contenido">
-                    <span class="siglas">Tema 6</span>
-                    <span class="nombre-tema">Apps Multicapa</span>
-                    <ul class="lista-ejercicios">
-                        <li>
-                            <a href="/ENLDWESLoginLogoff/indexLoginLogoff.php">
-                                <i class="fa-solid fa-sitemap"></i> Login Multicapa
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </article>
-
-            <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #999;">
-                    <i class="fa-solid fa-cloud"></i>
-                </div>
-                <div class="tarjeta-contenido">
-                    <span class="siglas">Tema 7</span>
-                    <span class="nombre-tema">Servicios Web</span>
-                    <ul class="lista-ejercicios"></ul>
-                </div>
-            </article>
-
-            <article class="tarjeta tarjeta-tema">
-                <div class="tarjeta-imagen" style="background-color: #999;">
+                <div class="tarjeta-imagen" style="background-color: #007ACC;">
                     <i class="fa-solid fa-rocket"></i>
                 </div>
                 <div class="tarjeta-contenido">
-                    <span class="siglas">Tema 8</span>
-                    <span class="nombre-tema">Apps Híbridas</span>
+                    <span class="siglas">Tema 2</span>
+                    <span class="nombre-tema">Despliegue de aplicaciones web</span>
                     <ul class="lista-ejercicios">
-                        <li class="sin-enlace">
-                             App Final
+                        <li>
+                            <a href="https://github.com/EnriqueNieto90/ENLDAWProyectoDAW/blob/master/EntornoExplotacion.md" target="_blank">
+                                <i class="fa-solid fa-industry"></i> Documentación Entorno de Producción
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/EnriqueNieto90/ENLDAWProyectoDAW/blob/master/EntornoExplotacion.md" target="_blank">
+                                <i class="fa-solid fa-cart-shopping"></i> Despliegue App Ventas - Examen
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </article>
+            
+            <article class="tarjeta tarjeta-tema">
+                <div class="tarjeta-imagen" style="background-color: #007ACC;">
+                    <i class="fa-solid fa-code-branch"></i>
+                </div>
+                <div class="tarjeta-contenido">
+                    <span class="siglas">Tema 3</span>
+                    <span class="nombre-tema">Control de versiones. Documentación</span>
+                    <ul class="lista-ejercicios">
+                        <li>
+                            <a href="https://github.com/EnriqueNieto90/ENLDAWProyectoDAW" target="_blank">
+                                <i class="fa-brands fa-php"></i> PHPDocumentor
+                            </a>
                         </li>
                     </ul>
                 </div>
             </article>
 
-        </div>
     </main>
 
     <footer class="pie-pagina">
         <div class="contenedor contenido-footer">
             <div class="texto-legal">
                 <p>2025-26 IES LOS SAUCES. ©Todos los derechos reservados.</p>
-                <p class="autor">Enrique Nieto Lorenzo. Fecha de Actualización: 07-01-2026</p>
+                <p class="autor">Enrique Nieto Lorenzo. Fecha de Actualización: 18-01-2026</p>
             </div>
             <div class="iconos-footer">
-                <a href="https://github.com/EnriqueNieto90/ENLDWESProyectoDWES" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                <a href="https://github.com/EnriqueNieto90/ENLDAWProyectoDAW" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
                 <a href="../index.html" title="Inicio"><i class="fa-solid fa-house"></i></a> 
             </div>
         </div>
