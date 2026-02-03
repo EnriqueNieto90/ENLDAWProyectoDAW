@@ -2430,17 +2430,6 @@ exit        # Salir
 - Cyberduck (Windows/macOS)
 - MobaXterm (Windows)
 
-**Configurar FileZilla:**
-
-1. Archivo → Gestor de sitios → Nuevo sitio
-2. Protocolo: SFTP
-3. Servidor: 10.199.10.22
-4. Puerto: 22
-5. Usuario: operadorweb
-6. Contraseña: paso
-
-<!-- Captura sugerida: configuración FileZilla con SFTP -->
-
 #### Usuarios Enjaulados
 
 Usuario enjaulado está restringido a su home.
@@ -2550,7 +2539,7 @@ Match Group sftpusers
     X11Forwarding no
 ```
 
-<!-- Captura sugerida: sshd_config con Match Group sftpusers -->
+<!-- Captura: sshd_config con Match Group sftpusers -->
 
 **Explicación:**
 
