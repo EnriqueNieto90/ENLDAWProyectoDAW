@@ -2154,10 +2154,10 @@ Genera documentación API automáticamente desde comentarios DocBlock.
 
 #### Requisitos Mínimos
 
-- **Sistema Operativo**: Ubuntu/Debian (o distribuciones basadas en APT)
+- **Sistema Operativo**: Ubuntu/Debian
 - **PHP**: Versión 8.1 o superior (en este manual se usa PHP 8.3)
 - **Extensiones PHP requeridas**:
-  - php-xml (DOM, XMLWriter, SimpleXML)
+  - php-xml
   - php-mbstring
 - **Herramientas del sistema**: wget, sudo
 - **Espacio en disco**: Al menos 50 MB para phpDocumentor y las dependencias
