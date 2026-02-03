@@ -3,7 +3,7 @@
 # SERVIDOR DE DESARROLLO - UBUNTU SERVER 24.04.3 LTS
 
 | CFGS Desarrollo de Aplicaciones Web |
-|:-----------------------------------:|
+|:-----------------------------------:|º
 | ![Portada](doc/images/portada.jpg)      |
 | **Instalación, Configuración y Documentación del Entorno de Desarrollo** |
 
@@ -2152,13 +2152,76 @@ sudo truncate -s 0 /tmp/xdebug.log
 
 Genera documentación API automáticamente desde comentarios DocBlock.
 
-**Ventajas:**
-- Documentación automática
-- Estándar DocBlock
-- HTML navegable
-- Integración con IDEs
+#### Requisitos Mínimos
 
-**Ejemplo DocBlock:**
+- **Sistema Operativo**: Ubuntu/Debian (o distribuciones basadas en APT)
+- **PHP**: Versión 8.1 o superior (en este manual se usa PHP 8.3)
+- **Extensiones PHP requeridas**:
+  - php-xml (DOM, XMLWriter, SimpleXML)
+  - php-mbstring
+- **Herramientas del sistema**: wget, sudo
+- **Espacio en disco**: Al menos 50 MB para phpDocumentor y las dependencias
+
+#### Verificación de Requisitos Previos
+
+Comprobar la versión de PHP instalada:
+```bash
+php -v
+```
+
+Verificar si las extensiones PHP ya están instaladas:
+```bash
+php -m | grep -E "xml|mbstring"
+```
+
+Si aparecen `xml` y `mbstring` en la salida, las extensiones ya están instaladas y se puede omitir su instalación.
+
+#### Instalación Dependencias
+
+Actualizar el servidor:
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
+Instalar extensión XML (necesaria para leer configuración y plantillas):
+```bash
+sudo apt install php8.3-xml
+```
+
+Instalar extensión MBString (necesaria para caracteres especiales y acentos):
+```bash
+sudo apt install php8.3-mbstring
+```
+
+Reiniciar el servicio de PHP para cargar las extensiones:
+```bash
+sudo systemctl restart php8.3-fpm
+```
+
+#### Instalación PHPDocumentor
+
+Descargar el archivo PHAR:
+```bash
+wget https://phpdoc.org/phpDocumentor.phar
+```
+
+Otorgar permisos de ejecución:
+```bash
+sudo chmod +x phpDocumentor.phar
+```
+
+Mover a ubicación global para ejecutarlo desde cualquier directorio:
+```bash
+sudo mv phpDocumentor.phar /usr/local/bin/phpdoc
+```
+
+Verificar instalación:
+```bash
+phpdoc --version
+```
+
+#### Ejemplo DocBlock
 ```php
 <?php
 /**
@@ -2177,37 +2240,6 @@ function calcularAreaCirculo(float $radio): float {
 ?>
 ```
 
-#### Instalación Dependencias
-```bash
-sudo apt install php8.3-xml php8.3-mbstring
-sudo systemctl restart php8.3-fpm
-php -m | grep -E 'xml|mbstring'
-```
-
-#### Instalación PHPDocumentor
-```bash
-# Descargar
-wget https://phpdoc.org/phpDocumentor.phar
-
-# O con curl
-curl -L -O https://phpdoc.org/phpDocumentor.phar
-
-# Verificar
-ls -lh phpDocumentor.phar
-
-# Permisos
-chmod +x phpDocumentor.phar
-
-# Probar
-./phpDocumentor.phar --version
-
-# Mover a ubicación global
-sudo mv phpDocumentor.phar /usr/local/bin/phpdoc
-
-# Verificar
-phpdoc --version
-```
-
 #### Uso
 
 **Estructura proyecto:**
@@ -2222,23 +2254,26 @@ phpdoc --version
 ```
 
 **Generar documentación:**
-```bash
-# Posicionarse en código fuente
-cd /var/www/html/MiProyecto/src
 
-# Generar
+Posicionarse en el código fuente:
+```bash
+cd /var/www/html/MiProyecto/src
+```
+
+Asignar permisos para que operadorweb pueda crear la carpeta docs:
+```bash
+sudo chown -R operadorweb:www-data /var/www/html/MiProyecto
+sudo chmod -R 775 /var/www/html/MiProyecto
+```
+
+Generar la documentación:
+```bash
 phpdoc --directory . --target ../docs
 ```
 
-**Explicación:**
-- `--directory .`: Buscar en directorio actual (recursivo)
-- `--target ../docs`: Generar en carpeta docs
-
-**Alternativa con rutas completas:**
-```bash
-phpdoc --directory /var/www/html/MiProyecto/src \
-       --target /var/www/html/MiProyecto/docs
-```
+**Explicación de parámetros:**
+- `--directory .`: Busca archivos PHP en el directorio actual (recursivo)
+- `--target ../docs`: Genera el HTML de salida en la carpeta docs
 
 **Opciones adicionales:**
 ```bash
@@ -2249,29 +2284,7 @@ phpdoc -d src -t docs --ignore="vendor/,tests/"
 phpdoc -d src -t docs --title="Mi Aplicación Web"
 ```
 
-#### Ver Documentación
-
-**Navegador local:**
-```
-https://10.199.10.22/MiProyecto/docs/index.html
-```
-
-<!-- Captura sugerida: interfaz documentación generada por PHPDocumentor -->
-
-#### Solución Problemas
-
-**Permisos:**
-```bash
-sudo chown -R operadorweb:www-data /var/www/html/MiProyecto
-sudo chmod -R 775 /var/www/html/MiProyecto
-```
-
-**Extensión XML:**
-```bash
-sudo apt install php8.3-xml
-sudo systemctl restart php8.3-fpm
-php -m | grep xml
-```
+El proceso finaliza creando la carpeta docs con el archivo index.html, que contiene la documentación navegable.
 
 ---
 
