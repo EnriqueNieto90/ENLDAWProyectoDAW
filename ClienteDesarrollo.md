@@ -4,7 +4,7 @@
 
 | CFGS Desarrollo de Aplicaciones Web |
 |:-----------------------------------:|
-| ![Portada](images/portada.jpg)      |
+| ![Portada](doc/images/portada.jpg)      |
 | **Instalación, Configuración y Documentación del Cliente de Desarrollo** |
 
 > **Autor:** Enrique Nieto Lorenzo    
